@@ -4,9 +4,13 @@ Find meal-prep recipes using the ingredients you already have.
 
 Type what's in your fridge, like `chicken, rice, broccoli`, and get recipes ranked by how well they match, with a list of what you still need to buy.
 
+> **Note:** This is an educational project, made for learning purposes only.
+
 ## Download
 
-Download the  Windows app from [Releases](https://github.com/BogdanMuga/meal_prep_finder/releases/latest).
+Download the Windows app from [Releases](https://github.com/BogdanMuga/meal_prep_finder/releases/latest).
+
+> **Tip:** Best enjoyed on a full stomach. Running this app while hungry may cause uncontrollable cravings.
 
 ## Features
 
