@@ -1,0 +1,75 @@
+{% macro recipe_card(recipe, result=none) %}
+<article class="card">
+  <div class="photo">
+    {% if recipe.image %}<img src="{{ recipe.image | photo }}" alt="{{ recipe.name }}" loading="lazy" onerror="this.remove()">{% endif %}
+    {% if config.ADMIN_ENABLED %}<a class="edit-link" href="/admin/{{ recipe.id }}/edit">✏️ Edit</a>{% endif %}
+    <div class="badges">
+      <span class="badge {{ recipe.difficulty }}">{{ recipe.difficulty | capitalize }}</span>
+      {% if recipe.country %}<span class="badge">{{ recipe.country | flag }} {{ recipe.country }}</span>{% endif %}
+      {% if recipe.cuisine %}<span class="badge">{{ recipe.cuisine }}</span>{% endif %}
+      {% if recipe.freezer_friendly %}<span class="badge freeze">❄ freezes {{ recipe.freezer_months }} mo</span>{% endif %}
+    </div>
+    <div class="head">
+      <h2>{{ recipe.name }}</h2>
+      {% if result %}<span class="score" title="Match score">{{ (result.score * 100) | round | int }}%</span>{% endif %}
+    </div>
+  </div>
+
+  <div class="body">
+    <div class="stats">
+      <span class="stat t">⏱ {{ recipe.total_minutes }} min</span>
+      <span class="stat s">🍱 {{ recipe.servings }} servings</span>
+      {% if recipe.nutrition %}
+        <span class="stat k">🔥 {{ recipe.nutrition.calories }} kcal</span>
+        <span class="stat p">💪 {{ recipe.nutrition.protein_g }}g protein</span>
+      {% endif %}
+      <span class="stat f">🧊 Keeps {{ recipe.fridge_days }} days</span>
+    </div>
+    {% if recipe.tags %}
+      <div class="tags">{% for tag in recipe.tags %}<span class="tag c{{ loop.index0 % 6 }}">{{ tag }}</span>{% endfor %}</div>
+    {% endif %}
+
+    {% if result and result.matches %}
+      <div class="label">Uses your</div>
+      <div class="chips">
+        {% for match in result.matches %}<span class="chip {% if match.score < 1 %}partial{% endif %}" title="{{ match.ingredient }}">{{ match.term }} → {{ match.canonical }}</span>{% endfor %}
+      </div>
+    {% endif %}
+    {% if result and result.missing_ingredients %}
+      <div class="label">You'll also need</div>
+      <div class="chips">
+        {% for line in result.missing_ingredients %}<span class="chip miss">{{ line }}</span>{% endfor %}
+      </div>
+    {% endif %}
+
+    <details>
+      <summary>Full recipe</summary>
+      <p>{{ recipe.description }}</p>
+      <p class="meta">Prep {{ recipe.prep_minutes }} min · Cook {{ recipe.cook_minutes }} min</p>
+      {% if recipe.nutrition %}{% set nutrition = recipe.nutrition %}
+        <div class="label">Per serving</div>
+        <div class="nutrition">
+          <div><b>{{ nutrition.calories }}</b><span>kcal</span></div>
+          <div><b>{{ nutrition.protein_g }}g</b><span>protein</span></div>
+          <div><b>{{ nutrition.carbs_g }}g</b><span>carbs</span></div>
+          <div><b>{{ nutrition.fat_g }}g</b><span>fat</span></div>
+          <div><b>{{ nutrition.fiber_g }}g</b><span>fiber</span></div>
+        </div>
+      {% endif %}
+      <div class="label">Ingredients</div>
+      <ul>{% for line in recipe.ingredients %}<li>{{ line }}</li>{% endfor %}</ul>
+      <div class="label">Method</div>
+      <ol>{% for step in recipe.steps %}<li>{{ step }}</li>{% endfor %}</ol>
+      <ul class="facts">
+        {% if recipe.equipment %}<li><strong>Equipment:</strong> {{ recipe.equipment | join(', ') }}</li>{% endif %}
+        {% if recipe.storage %}<li><strong>Storage:</strong> {{ recipe.storage }}</li>{% endif %}
+        {% if recipe.reheat %}<li><strong>Reheat:</strong> {{ recipe.reheat }}</li>{% endif %}
+      </ul>
+      {% if recipe.tips %}
+        <div class="label">Tips</div>
+        <ul>{% for tip in recipe.tips %}<li>{{ tip }}</li>{% endfor %}</ul>
+      {% endif %}
+    </details>
+  </div>
+</article>
+{% endmacro %}

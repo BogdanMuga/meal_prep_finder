@@ -1,0 +1,18 @@
+# Local databases (live data; recipes.json is the committed backup).
+# data/ holds the database used when running from the project; instance/ is an older location.
+/data/
+instance/
+
+# Packaged app (build.bat), with its own database inside
+/bin/
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Editors and tools
+.idea/
+.vscode/
+.claude/

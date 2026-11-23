@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% from "_card.html" import recipe_card with context %}
+{% block title %}{% if q %}{{ q }} · {% endif %}Meal Prep Finder{% endblock %}
+{% block hero %}
+    <p class="sub">Type what's in your fridge. We'll find meal-prep recipes that use it ({{ total }} recipes).</p>
+
+    <form method="get" action="/">
+      <input type="text" name="q" value="{{ q }}" placeholder="chicken, broccoli, rice, -peanuts" autofocus aria-label="Ingredients">
+      <div class="modes" role="radiogroup" aria-label="Match mode">
+        <label><input type="radio" name="mode" value="any" {% if mode == 'any' %}checked{% endif %}><span>Any</span></label>
+        <label><input type="radio" name="mode" value="all" {% if mode == 'all' %}checked{% endif %}><span>All</span></label>
+      </div>
+      <button type="submit">Find recipes</button>
+    </form>
+    <p class="hint">Separate with commas. Exclude with <code>-nuts</code> or <code>no dairy</code>. Categories work too: <code>seafood</code>, <code>meat</code>, <code>nuts</code>, <code>dairy</code>.</p>
+{% endblock %}
+{% block content %}
+  {% if response %}
+    {% if response.corrections %}
+      <p class="notice fix">Showing results for
+        {% for wrong, right in response.corrections.items() %}<strong>{{ right }}</strong> (you typed “{{ wrong }}”){% if not loop.last %}, {% endif %}{% endfor %}.
+      </p>
+    {% endif %}
+    {% if response.unknown_terms %}
+      <p class="notice warn">No recipes know about: {{ response.unknown_terms | join(', ') }}.</p>
+    {% endif %}
+
+    <p class="count">{{ response.results | length }} recipe{{ '' if response.results|length == 1 else 's' }}
+      {% if response.query.include %} using {{ 'all of' if mode == 'all' else 'any of' }} <strong>{{ response.query.include | join(', ') }}</strong>{% endif %}
+      {% if response.query.exclude %} · without <strong>{{ response.query.exclude | join(', ') }}</strong>{% endif %}
+    </p>
+
+    {% for result in response.results %}
+      {{ recipe_card(result.recipe, result) }}
+    {% else %}
+      <p class="empty">No recipes match. Try fewer ingredients or switch to “Any”.</p>
+    {% endfor %}
+  {% endif %}
+{% endblock %}

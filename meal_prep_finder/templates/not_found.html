@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Page not found · Meal Prep Finder{% endblock %}
+{% block hero %}
+    <p class="sub">Sorry, that page doesn't exist.</p>
+{% endblock %}
+{% block content %}
+  <div class="not-found">
+    <p class="big" aria-hidden="true">🍽️</p>
+    <h2>Page not found</h2>
+    <p>There's nothing at <code>{{ request.path }}</code>. The address may have a typo, or the page may have been removed.</p>
+    <p class="links">
+      <a class="btn" href="/">🔍 Search by ingredient</a>
+      <a class="btn secondary" href="/countries">🌍 Browse recipes</a>
+    </p>
+  </div>
+{% endblock %}

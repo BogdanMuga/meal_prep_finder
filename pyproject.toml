@@ -1,0 +1,36 @@
+[project]
+name = "meal-prep-finder"
+version = "0.1.0"
+description = "Find meal-prep recipes that use the ingredients you have."
+requires-python = ">=3.10"
+dependencies = [
+    "flask>=3.0",
+    "flask-sqlalchemy>=3.1",
+    "flask-migrate>=4.0",
+    "flask-wtf>=1.2",
+    "pillow>=11.0",
+    "waitress>=3.0",
+]
+
+[project.optional-dependencies]
+package = ["pyinstaller>=6.16"]
+test = ["pytest>=8.0"]
+
+[tool.setuptools.packages.find]
+include = ["meal_prep_finder*"]
+
+[tool.setuptools.package-data]
+meal_prep_finder = [
+    "data/*.json",
+    "templates/*.html",
+    "templates/editor/*.html",
+    "static/recipes/*.jpg",
+    "migrations/alembic.ini",
+    "migrations/script.py.mako",
+    "migrations/*.py",
+    "migrations/versions/*.py",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

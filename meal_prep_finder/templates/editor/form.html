@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit ' ~ row.name if row else 'Add a recipe' }} · Meal Prep Finder{% endblock %}
+{% block hero %}
+    <p class="sub">{{ 'Editing “' ~ row.name ~ '”' if row else 'Add a new meal-prep recipe' }}.</p>
+{% endblock %}
+
+{% macro field(form_field, wide=false) %}
+  <div class="field{% if wide %} wide{% endif %}">
+    {{ form_field.label }}
+    {{ form_field(**kwargs) }}
+    {% if form_field.description %}<span class="help">{{ form_field.description }}</span>{% endif %}
+    {% for error in form_field.errors %}<span class="err">{{ error }}</span>{% endfor %}
+  </div>
+{% endmacro %}
+
+{% block content %}
+  {% if errors %}
+    <ul class="errors" role="alert">{% for error in errors %}<li>{{ error }}</li>{% endfor %}</ul>
+  {% elif form.errors %}
+    <ul class="errors" role="alert"><li>Please fix the fields marked below.</li></ul>
+  {% endif %}
+
+  <form class="editor" method="post" enctype="multipart/form-data" novalidate>
+    {{ form.hidden_tag() }}
+    <fieldset>
+      <legend>Basics</legend>
+      <div class="fields">
+        {{ field(form.name, wide=true) }}
+        {% if row %}
+          <div class="field"><label>ID (URL name)</label><input type="text" value="{{ row.id }}" disabled><span class="help">Can't be changed after the recipe is created.</span></div>
+        {% else %}
+          {{ field(form.id) }}
+        {% endif %}
+        {{ field(form.difficulty) }}
+        {{ field(form.description, wide=true) }}
+        {{ field(form.country) }}
+        {{ field(form.cuisine, list="styles") }}
+        <datalist id="styles">{% for style in regional_styles %}<option value="{{ style }}">{% endfor %}</datalist>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Time, portions and storage</legend>
+      <div class="fields">
+        {{ field(form.servings, min=1) }}
+        {{ field(form.prep_minutes, min=0) }}
+        {{ field(form.cook_minutes, min=0) }}
+        {{ field(form.fridge_days, min=0) }}
+        {{ field(form.freezer_months, min=0) }}
+        {{ field(form.storage, wide=true) }}
+        {{ field(form.reheat, wide=true) }}
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Nutrition per serving <span class="help">(optional, but fill in all of calories, protein, carbs and fat if you use it)</span></legend>
+      <div class="fields">
+        {{ field(form.calories, min=0) }}
+        {{ field(form.protein_g, min=0) }}
+        {{ field(form.carbs_g, min=0) }}
+        {{ field(form.fat_g, min=0) }}
+        {{ field(form.fiber_g, min=0) }}
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Recipe</legend>
+      <div class="fields">
+        {{ field(form.ingredients, wide=true, rows=8) }}
+        {{ field(form.steps, wide=true, rows=8) }}
+        {{ field(form.equipment, wide=true, rows=3) }}
+        {{ field(form.tips, wide=true, rows=3) }}
+        {{ field(form.tags, wide=true) }}
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Photo</legend>
+      <div class="fields">
+        <div class="field wide">
+          {% if row and row.image %}<img class="current-photo" src="{{ row.image | photo(small=True) }}" alt="Current photo of {{ row.name }}">{% endif %}
+          {{ form.photo.label }}
+          {{ form.photo(accept="image/jpeg,image/png,image/webp") }}
+          <span class="help">{{ form.photo.description }}{% if row and row.image %} Uploading a new one replaces the current photo.{% endif %}</span>
+          {% for error in form.photo.errors %}<span class="err">{{ error }}</span>{% endfor %}
+        </div>
+        {% if row and row.image %}<div class="field check wide">{{ form.remove_photo() }} {{ form.remove_photo.label }}</div>{% endif %}
+      </div>
+    </fieldset>
+
+    <div class="toolbar">
+      <a class="btn secondary" href="{{ url_for('editor.index') }}">Cancel</a>
+      <button class="btn" type="submit">{{ 'Save changes' if row else 'Add recipe' }}</button>
+    </div>
+  </form>
+{% endblock %}

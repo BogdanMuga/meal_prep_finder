@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Manage recipes · Meal Prep Finder{% endblock %}
+{% block hero %}
+    <p class="sub">Add, edit or delete recipes. Changes are saved to the database and show up in search straight away.</p>
+{% endblock %}
+{% block content %}
+  <div class="toolbar">
+    <h2>{{ recipes | length }} recipe{{ '' if recipes|length == 1 else 's' }}</h2>
+    <a class="btn" href="{{ url_for('editor.new') }}">＋ Add a recipe</a>
+  </div>
+  {% if recipes %}
+    <div class="editor-list">
+      {% for recipe in recipes %}
+        <div class="editor-row">
+          {% if recipe.image %}<img src="{{ recipe.image | photo(small=True) }}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">{% else %}<span class="noimg" aria-hidden="true"></span>{% endif %}
+          <div class="what">
+            <b>{{ recipe.name }}</b>
+            <small>{% if recipe.country %}{{ recipe.country | flag }} {{ recipe.country }}{% else %}No country{% endif %}{% if recipe.cuisine %} · {{ recipe.cuisine }}{% endif %} · {{ recipe.difficulty | capitalize }} · {{ recipe.total_minutes }} min</small>
+          </div>
+          <div class="actions">
+            <a class="btn small secondary" href="{{ url_for('editor.edit', recipe_id=recipe.id) }}">Edit</a>
+            <a class="btn small danger" href="{{ url_for('editor.delete', recipe_id=recipe.id) }}">Delete</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="empty">No recipes yet. Add the first one.</p>
+  {% endif %}
+  <p class="note">To keep your changes in <code>recipes.json</code> (the backup), run <code>python -m flask --app meal_prep_finder.app:create_app export-recipes</code>.</p>
+{% endblock %}

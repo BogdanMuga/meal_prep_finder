@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Delete {{ row.name }} · Meal Prep Finder{% endblock %}
+{% block hero %}
+    <p class="sub">Delete a recipe.</p>
+{% endblock %}
+{% block content %}
+  <form class="editor" method="post">
+    {{ form.hidden_tag() }}
+    <h2>Delete “{{ row.name }}”?</h2>
+    <p>This removes it from the database{% if row.image == 'recipes/' ~ row.id ~ '.jpg' %} and deletes its photo{% endif %}. It can't be undone in the app.
+       If you've exported before, the recipe is still in <code>recipes.json</code> until you export again.</p>
+    <div class="toolbar">
+      <a class="btn secondary" href="{{ url_for('editor.index') }}">Keep it</a>
+      <button class="btn danger" type="submit">Delete recipe</button>
+    </div>
+  </form>
+{% endblock %}

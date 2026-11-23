@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% from "_card.html" import recipe_card with context %}
+{% block title %}{% if selected %}{{ selected.name }} · {% elif view == 'all' %}All recipes · {% endif %}Browse · Meal Prep Finder{% endblock %}
+{% block hero %}
+    <p class="sub">{% if view == 'all' %}Every meal-prep recipe we have, A to Z.{% else %}Travel the world one lunchbox at a time. Pick a country, or General for everyday dishes from nowhere in particular.{% endif %}</p>
+{% endblock %}
+{% block content %}
+  <nav class="views" aria-label="Browse view">
+    <a class="view {% if view == 'all' %}active{% endif %}" href="/recipes" {% if view == 'all' %}aria-current="page"{% endif %}>📋 All recipes</a>
+    <a class="view {% if view == 'origin' %}active{% endif %}" href="/countries" {% if view == 'origin' and not selected %}aria-current="page"{% endif %}>🌍 By origin</a>
+  </nav>
+
+  {% if missing %}
+    <p class="notice warn">We don't have recipes from that country. Pick one below.</p>
+  {% endif %}
+
+  {% if view == 'all' %}
+    <p class="count">{{ recipes | length }} recipe{{ '' if recipes|length == 1 else 's' }}</p>
+    {% for recipe in recipes %}
+      {{ recipe_card(recipe) }}
+    {% else %}
+      <p class="empty">No recipes yet.</p>
+    {% endfor %}
+  {% elif not tiles %}
+    <p class="empty">No recipes yet.</p>
+  {% elif selected %}
+    <nav class="strip" aria-label="Origins">
+      <a class="pill" href="/countries">All origins</a>
+      {% for tile in tiles %}
+        <a class="pill {% if tile.slug == selected.slug %}active{% endif %}" href="/countries/{{ tile.slug }}"
+           {% if tile.slug == selected.slug %}aria-current="page"{% endif %}>{{ tile.flag }} {{ tile.name }}<span class="n">{{ tile.count }}</span></a>
+      {% endfor %}
+    </nav>
+
+    <div class="tile-title">
+      <span class="flag" aria-hidden="true">{{ selected.flag }}</span>
+      <h2>{{ selected.name }}</h2>
+    </div>
+    <p class="count">{{ recipes | length }} recipe{{ '' if recipes|length == 1 else 's' }}</p>
+    {% for recipe in recipes %}
+      {{ recipe_card(recipe) }}
+    {% endfor %}
+  {% else %}
+    <div class="tiles">
+      {% for tile in tiles %}
+        <a class="tile" href="/countries/{{ tile.slug }}">
+          {% if tile.image %}<img src="{{ tile.image | photo(small=True) }}" alt="" loading="lazy" onerror="this.remove()">{% endif %}
+          <span class="info">
+            <span class="flag" aria-hidden="true">{{ tile.flag }}</span>
+            <b>{{ tile.name }}</b>
+            <small>{{ tile.count }} recipe{{ '' if tile.count == 1 else 's' }}</small>
+          </span>
+        </a>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endblock %}
